@@ -8,6 +8,6 @@ export default defineConfig({
 
     // 您也可以添加一个基础路径配置，以防您在其他地方部署：
     // base: './', 
-    base: '/lsBucket/',
+    base: '/demo/',
     plugins: []
 });
