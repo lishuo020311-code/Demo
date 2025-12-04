@@ -88,33 +88,57 @@ canvas {
     pointer-events: none;
 }
 
-/* 增大摄像头窗口的样式 */
+/* 摄像头整体容器 */
 #gesture-container {
-    /* 假设这是包含 video 和 canvas 的容器 */
     position: fixed;
     bottom: 20px;
-    /* 保持在左下角 */
     left: 20px;
 
-    /* 增大窗口大小，例如设置为屏幕宽度的 35% */
-    width: 35vw;
-    /* 调整此值以达到您想要的大小 */
+    width: 360px;           /* 默认 PC 端宽度 */
     height: auto;
-    /* 保持宽高比 */
-    max-width: 400px;
-    /* 或者设置一个最大值 */
 
+    max-width: 40vw;        /* 让大屏幕也能随窗口缩放 */
+    aspect-ratio: 4 / 3;    /* 保持摄像头比例，不会被压扁 */
+
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    overflow: hidden;
+
+    background: black;
     z-index: 1000;
-    /* 确保它在最上层 */
-    border: 2px solid white;
-    /* 可选：添加边框 */
 }
 
-/* 确保视频和画布填充容器 */
+/* 里面的视频和 canvas 自动填满容器 */
 #webcam,
 #gesture-canvas {
     width: 100%;
     height: 100%;
-    /* 保持视频镜像 */
-    transform: scaleX(-1);
+    object-fit: cover;
+    transform: scaleX(-1); /* 保持镜像 */
+}
+
+/* 画布保持覆盖视频，不能点击 */
+#gesture-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+/* 💡 手机端自动缩小 */
+@media (max-width: 768px) {
+    #gesture-container {
+        width: 45vw;      /* 手机改成更小占比 */
+        left: 10px;
+        bottom: 10px;
+    }
+}
+
+/* 超小屏幕（比如某些安卓） */
+@media (max-width: 480px) {
+    #gesture-container {
+        width: 55vw;      /* 更小屏幕进一步缩小 */
+        left: 5px;
+        bottom: 5px;
+    }
 }
