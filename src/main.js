@@ -3,9 +3,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { HandLandmarker, FilesetResolver, DrawingUtils } from '@mediapipe/tasks-vision';
 import { Pane } from 'tweakpane';
 import fireworkImageUrl from './assert/47ee8e6149e3fcf9ed229896d2f484fb.jpg';
-import './assert/47ee8e6149e3fcf9ed229896d2f484fb.jpg';
-import './assert/0172d4f4caeadacb1cad866e9ff7f7db.jpg';
-import './assert/d7bb4d2ac14592c1e32dd904e63ef599.jpg';
+import img1Url from './assert/47ee8e6149e3fcf9ed229896d2f484fb.jpg';
+import img2Url from './assert/0172d4f4caeadacb1cad866e9ff7f7db.jpg';
+import img3Url from './assert/d7bb4d2ac14592c1e32dd904e63ef599.jpg';
+
 import './styles.css'
 // --- 常量配置 ---
 const MEDIAPIPE_WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm';
@@ -49,6 +50,72 @@ const PARAMS = {
     color: 'rgba(51, 146, 255, 1)',
     particleSize: 0.43,
 };
+async function loadDefaultImages() {
+    const urls = [img1Url, img2Url, img3Url];
+
+    loadedImages = [];
+
+    for (const url of urls) {
+        const img = await loadImageAsPoints(url);
+        loadedImages.push(img);
+    }
+
+    console.log(`默认图片已加载: ${loadedImages.length} 张`);
+
+    // 启动图片模式
+    if (loadedImages.length > 0) {
+        currentMode = MODES.VIEW_PHOTO;
+        selectedPhotoIndex = 0;
+        isAutoCycling = true;
+        lastCycleTime = performance.now();
+        updateTargetShape();
+    }
+}
+async function loadImageAsPoints(url) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        img.crossOrigin = 'anonymous';
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            const size = 1024;
+            const scale = Math.min(size / img.width, size / img.height);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+            const points = [];
+            for (let y = 0; y < canvas.height; y += 1) {
+                for (let x = 0; x < canvas.width; x += 1) {
+                    const i = (y * canvas.width + x) * 4;
+                    if (data[i + 3] > 50) {
+                        points.push({
+                            x: (x / canvas.width - 0.5) * 2 * (canvas.width / canvas.height),
+                            y: -(y / canvas.height - 0.5) * 2,
+                            r: data[i] / 255,
+                            g: data[i + 1] / 255,
+                            b: data[i + 2] / 255
+                        });
+                    }
+                }
+            }
+
+            // 限制粒子数
+            if (points.length > PARTICLES_COUNT) {
+                points.sort(() => 0.5 - Math.random());
+                points.length = PARTICLES_COUNT;
+            }
+
+            resolve({ points });
+        };
+    });
+}
 
 // --- 辅助函数：加载图片采样 (略) ---
 function loadFireworkImageSamples() {
@@ -521,3 +588,4 @@ initParticles();
 setupUI();
 setupHandTracking();
 animate(performance.now());
+loadDefaultImages();
