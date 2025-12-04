@@ -1,0 +1,19 @@
+{
+  "name": "threejs-hand-particle",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.14",
+    "localtunnel": "^2.0.2",
+    "three": "^0.165.0",
+    "tweakpane": "^4.0.3"
+  },
+  "devDependencies": {
+    "vite": "^5.2.13"
+  }
+}

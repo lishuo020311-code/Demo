@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D 粒子手势控制系统</title>
+  <script type="module" crossorigin src="./assets/index-5hC27lbw.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CbXYsim4.css">
+</head>
+
+<body>
+    <div id="ui-container">
+        <input type="file" id="folder-input" webkitdirectory directory multiple accept="image/*" />
+        <div class="instruction">
+            <p>🖐️ 张开手掌：展示照片墙</p>
+            <p>✊ 握拳：返回爱心</p>
+            <p>☝️ 食指：选择照片 (停留1秒查看)</p>
+        </div>
+    </div>
+    <div id="camera-container">
+        <video id="webcam" autoplay playsinline muted></video>
+        <canvas id="gesture-canvas"></canvas>
+    </div>
+    <button id="fullscreen-btn" class="control-btn">全屏</button>
+
+</body>
+
+</html>
