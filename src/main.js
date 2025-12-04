@@ -399,39 +399,50 @@ function handleInteraction(leftGesture, rightGesture) {
     let activeGesture = 'NONE';
     const currentTime = performance.now();
 
-    // 左手：张开 -> 分散；握拳 -> 聚合（图片）
+    // 左手控制显示模式
     if (loadedImages.length > 0) {
+        // 左手张开 -> 分散，暂停循环
         if (leftGesture === 'OPEN_PALM') {
             if (currentMode !== MODES.EXPLODE) {
                 currentMode = MODES.EXPLODE;
-                isAutoCycling = false;
+                isAutoCycling = false;  // 暂停自动播放
                 updateTargetShape();
             }
             activeGesture = 'OPEN_PALM';
-        } else if (leftGesture === 'FIST') {
+        }
+
+        // 左手握拳 -> 聚合成图片，恢复循环
+        else if (leftGesture === 'FIST') {
             if (currentMode !== MODES.VIEW_PHOTO) {
                 currentMode = MODES.VIEW_PHOTO;
-                if (selectedPhotoIndex === -1) selectedPhotoIndex = 0;
-                isAutoCycling = false;
+
+                if (selectedPhotoIndex === -1)
+                    selectedPhotoIndex = 0;
+
+                isAutoCycling = true;   // ⭐恢复自动播放
+                lastCycleTime = currentTime;
                 updateTargetShape();
             }
             activeGesture = 'FIST';
         }
     }
 
-    // 右手用于翻页（保留冷却逻辑）
+    // 右手控制图片切换（保持原逻辑）
     if (currentMode === MODES.VIEW_PHOTO && loadedImages.length > 1) {
+
         if (rightGesture === 'INDEX_PREVIOUS' || rightGesture === 'INDEX_NEXT') {
             activeGesture = rightGesture;
         }
 
         if (currentTime - lastManualChangeTime > MANUAL_COOLDOWN_TIME) {
+
             if (rightGesture === 'INDEX_PREVIOUS') {
                 selectedPhotoIndex = (selectedPhotoIndex - 1 + loadedImages.length) % loadedImages.length;
                 lastCycleTime = currentTime;
                 lastManualChangeTime = currentTime;
                 updateTargetShape();
-            } else if (rightGesture === 'INDEX_NEXT') {
+            }
+            else if (rightGesture === 'INDEX_NEXT') {
                 selectedPhotoIndex = (selectedPhotoIndex + 1) % loadedImages.length;
                 lastCycleTime = currentTime;
                 lastManualChangeTime = currentTime;
@@ -442,6 +453,7 @@ function handleInteraction(leftGesture, rightGesture) {
 
     return activeGesture;
 }
+
 
 // --- 动画循环与插值 ---
 function animate(currentTime) {
